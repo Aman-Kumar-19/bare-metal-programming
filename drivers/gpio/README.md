@@ -29,11 +29,10 @@ The driver provides a clean API for configuring pin direction, controlling outpu
 ## 🧩 API Overview
 
 ```c
-void gpio_set_output(uint8_t port, uint8_t pin);
-void gpio_set_input(uint8_t port, uint8_t pin);
-
-void gpio_set_high(uint8_t port, uint8_t pin);
-void gpio_set_low(uint8_t port, uint8_t pin);
-void gpio_toggle(uint8_t port, uint8_t pin);
+void gpio_configure_pin(gpio_port_id_t port,uint8_t pin,gpio_direction_t direction);
+void gpio_write_high(gpio_port_id_t port, uint8_t pin);
+void gpio_write_low(gpio_port_id_t port, uint8_t pin);
+void gpio_write_toggle(gpio_port_id_t port, uint8_t pin);
+bool gpio_read_pin(gpio_port_id_t port, uint8_t pin);
 
 bool gpio_re_
