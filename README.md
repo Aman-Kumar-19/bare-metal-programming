@@ -94,8 +94,25 @@ This repository focuses on **how firmware actually works under the hood** — no
 
 ```text
 bare-metal-programming-guide/
-├── docs/              # Theory, explanations, diagrams
-├── examples/          # Minimal working examples
-├── notes/             # Debugging notes & lessons learned
-├── tools/             # Scripts, helper utilities
+├── docs/                  # Theory, explanations, diagrams
+│   ├── startup.md
+│   ├── clock-system.md
+│   ├── linker-script.md
+│   └── interrupts.md
+│
+├── drivers/               # Register-level peripheral drivers
+│   └── gpio/
+│       ├── gpio.c         # PIC32CX GPIO driver implementation
+│       └── gpio.h         # GPIO driver API
+│
+├── examples/              # Minimal usage examples
+│   └── gpio_blink/
+│       └── main.c
+│
+├── notes/                 # Debugging notes & lessons learned
+│   └── gpio-debugging.md
+│
+├── tools/                 # Helper scripts, diagrams, utilities
+│
 └── README.md
+
