@@ -116,3 +116,35 @@ bare-metal-programming-guide/
 │
 └── README.md
 
+```
+---
+
+## 📂 Examples
+
+This repository contains **minimal, focused examples** that demonstrate  
+bare-metal firmware concepts using **clean, reusable drivers**.
+
+The goal of these examples is to show **how application code should interact
+with low-level drivers**, without exposing register-level details at the
+application layer.
+
+### 🔹 GPIO Blink Example
+
+**Location:**  
+`examples/gpio_blink/main.c`
+
+**Demonstrates:**
+- GPIO pin configuration using a driver abstraction
+- Output control via driver APIs instead of direct register access
+- Clear separation between **application layer** and **driver layer**
+- Simple blocking delay for timing validation
+
+**APIs used:**
+- `gpio_configure_pin()`
+- `gpio_write_high()`
+- `gpio_write_low()`
+
+> This example serves as a reference for writing **clean, maintainable
+bare-metal applications** using reusable peripheral drivers.
+
+
