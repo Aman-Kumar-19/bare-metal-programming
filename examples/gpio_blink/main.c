@@ -9,7 +9,7 @@
 
 #include <xc.h>          /* Device-specific definitions */
 #include <stdint.h>
-#include "gpio.h"
+#include "gpio_drv.h"
 
 /* --------------------------------------------------
  * LED pin configuration
@@ -27,7 +27,7 @@ static void delay(volatile uint32_t count)
 {
     while (count--)
     {
-        __asm__("nop");
+        __asm__ volatile ("nop");
     }
 }
 
