@@ -101,9 +101,13 @@ bare-metal-programming-guide/
 │   └── interrupts.md
 │
 ├── drivers/               # Register-level peripheral drivers
-│   └── gpio/
-│       ├── gpio.c         # PIC32CX GPIO driver implementation
-│       └── gpio.h         # GPIO driver API
+│   ├── gpio/
+│   │   ├── gpio_drv.c         # PIC32CX GPIO driver implementation
+│   │   └── gpio_drv.h         # GPIO driver public API
+│   │
+│   └── timer_counter/
+│       ├── timer_counter_drv.c        # Timer/Counter driver implementation
+│       └── timer_counter_drv.h        # Timer/Counter driver public API
 │
 ├── examples/              # Minimal usage examples
 │   └── gpio_blink/
