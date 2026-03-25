@@ -1,168 +1,298 @@
-# Bare-Metal Programming 🧠⚙️
+# 🧠⚙️ Bare-Metal Programming
 
-A practical, step-by-step guide to **bare-metal firmware development**, written from real industry experience and implemented on **independent, NDA-safe hardware setups**.
+A practical, industry-oriented guide to **bare-metal firmware development**, focused on understanding **how embedded systems actually work under the hood**.
 
-This repository focuses on **how firmware actually works under the hood** — not just HAL usage.
+> ⚡ No abstraction-heavy shortcuts. No blind HAL usage. Just real firmware engineering.
 
 ---
 
-## 🎯 Purpose of This Repository
+## 🚀 What This Repository Teaches
 
-- Build **strong bare-metal fundamentals**
-- Explain *why* things work, not just *how*
-- Create a reusable reference for:
-  - MCU bring-up
-  - Debugging
-  - Register-level programming
-- Share clean engineering workflows used in industry
+This repository is designed to help you:
 
-
+* Build **strong low-level fundamentals**
+* Understand **what happens before `main()`**
+* Write **clean, scalable firmware**
+* Debug **real-world embedded issues**
+* Think like a **firmware engineer — not just a coder**
 
 ---
 
 ## 🧱 Target Audience
 
-- Embedded / firmware engineers
-- ECE students transitioning to firmware roles
-- Engineers preparing for **low-level embedded interviews**
-- Anyone tired of copy-paste HAL code 😄
+* Embedded / Firmware Engineers
+* ECE students transitioning to firmware roles
+* Engineers preparing for **low-level embedded interviews**
+* Developers who want to move beyond **copy-paste HAL usage**
 
 ---
 
-## 🧩 Hardware Platforms (Planned)
+## 🧩 Hardware Platforms
 
-- PIC32CX (primary reference)
-- STM32 (where concepts overlap)
-- Generic Cortex-M concepts where applicable
+* PIC32CX (primary reference)
+* STM32 (concept mapping)
+* Generic Cortex-M architecture
 
-> Concepts are MCU-agnostic unless explicitly stated.
+> Most concepts are **MCU-agnostic** unless explicitly stated.
 
 ---
 
-## 📚 Planned Content Roadmap
+## 🧠 Boot Flow — From Reset to `main()`
+
+Before your firmware runs, the MCU executes a precise sequence of **hardware + startup logic**.
+
+### 🖼️ Overview
+
+![Boot Flow](notes/images/boot_flow.png)
+
+---
+
+### ⚡ Execution Flow
+
+```
+RESET
+  ↓
+Vector Table Read
+  ↓
+Reset_Handler
+  ↓
+SystemInit()
+  ↓
+Memory Init (.data / .bss)
+  ↓
+C Runtime Setup
+  ↓
+main()
+```
+
+---
+
+### 💡 Key Insight
+
+> **`main()` is NOT the entry point.**
+> Execution begins at **Reset_Handler**, controlled directly by hardware.
+
+👉 Deep dive:
+
+* [`notes/BOOT_FLOW.md`](notes/BOOT_FLOW.md)
+* [`notes/RESET_TO_MAIN_FLOW.md`](notes/RESET_TO_MAIN_FLOW.md)
+
+---
+
+## 📚 Technical Content Roadmap
 
 ### 1️⃣ MCU Boot & Startup
-- Reset vector flow
-- Startup code responsibilities
-- Memory initialization (BSS / DATA)
-- Role of linker script
 
-### 2️⃣ Clock System
-- Clock tree overview
-- Internal vs external clocks
-- PLL concepts
-- Common clock misconfiguration bugs
-
-### 3️⃣ Linker Script Fundamentals
-- FLASH vs RAM layout
-- Stack & heap placement
-- Sections explained
-- How linker scripts break firmware (and how to debug)
-
-### 4️⃣ Register-Level Programming
-- Reading datasheets effectively
-- Bit masks, shifts, and ownership
-- Safe register write patterns
-
-### 5️⃣ Interrupts & NVIC
-- Interrupt flow
-- Vector tables
-- Priority configuration
-- Debugging interrupt issues
-
-### 6️⃣ ADC Deep Dive
-- Polling vs DMA
-- Trigger sources
-- Timing & accuracy pitfalls
-- Debugging real ADC issues
-
-### 7️⃣ Debugging Techniques
-- Startup hangs
-- Clock-related failures
-- Peripheral not responding
-- DMA & interrupt traps
-
-### 8️⃣ Clean Firmware Architecture
-- Folder structure
-- Driver layering
-- Naming conventions
-- Scalable project layout
+* Reset vector flow
+* Startup code responsibilities
+* Memory initialization (`.data`, `.bss`)
+* Linker script interaction
 
 ---
 
-## 🛠️ How This Repo Is Structured
+### 2️⃣ Clock System
 
-```text
+* Clock tree architecture
+* Internal vs external clocks
+* PLL configuration
+* Real debugging cases
+
+---
+
+### 3️⃣ Linker Script Fundamentals
+
+* FLASH vs RAM layout
+* Section mapping
+* Stack & heap placement
+* Debugging linker-related issues
+
+---
+
+### 4️⃣ Register-Level Programming
+
+* Reading datasheets effectively
+* Bit manipulation techniques
+* Safe register write patterns
+
+---
+
+### 5️⃣ Interrupts & NVIC
+
+* Interrupt execution flow
+* Vector table mapping
+* Priority configuration
+* Debugging interrupt failures
+
+---
+
+### 6️⃣ ADC Deep Dive
+
+* Polling vs DMA
+* Trigger sources
+* Accuracy and timing issues
+* Real debugging scenarios
+
+---
+
+### 7️⃣ Debugging Techniques
+
+* Startup failures (before `main()`)
+* Clock-related bugs
+* Peripheral failures
+* DMA and interrupt traps
+
+---
+
+### 8️⃣ Clean Firmware Architecture
+
+* Layered design (App → Drivers → Hardware)
+* Driver abstraction principles
+* Scalable folder structure
+* Maintainable coding practices
+
+---
+
+## 🛠️ Repository Structure
+
+```
 bare-metal-programming-guide/
 ├── drivers/               # Register-level peripheral drivers
 │   ├── gpio/
-│   │   ├── gpio_drv.c         # PIC32CX GPIO driver implementation
-│   │   └── gpio_drv.h         # GPIO driver public API
-│   │
-│   └── timer_counter/
-│   |   ├── timer_counter_drv.c        # Timer/Counter driver implementation
-│   |   └── timer_counter_drv.h        # Timer/Counter driver public API
-│   |
-|   |__ Sercom_drv/
-│   |   ├── sercom_drv.c        
-│   |   └── sercom_drv.h
-│   |  
-|   |__ i2c_drv/
-│   |   ├── i2c_drv.c        
-│   |   └── i2c_drv.h
-│   |  
-|   |__ rtc_timer_drv/
-│   |   ├── rtc_timer_drv.c        
-│   |   └── rtc_timer_drv.h          
-|
-├── examples/              # Minimal usage examples
-│   └── gpio_blink/
-│   |   └── main.c
-│   |
+│   ├── timer_counter/
+│   ├── sercom_drv/
+│   ├── i2c_drv/
+│   └── rtc_timer_drv/
+│
+├── examples/              # Minimal, focused application examples
+│   ├── gpio_blink/
 │   └── sercom7_usart_echo/
-│       └── main.c
 │
-├── notes/                 # Debugging notes & lessons learned
-│   └── gpio-debugging.md
-│   └── CLOCK_SYSTEM.md
-│   └── CPU _CORE.md
-│   └── INTERRUPTS_&_NVIC.md
-│   └── SYSTEM_ARCHITECTURE & MEMORY_MAP.md
-│   └── debugging-peripherals.md
+├── notes/                 # Deep technical explanations
+│   ├── BOOT_FLOW.md
+│   ├── RESET_TO_MAIN_FLOW.md
+│   ├── CLOCK_SYSTEM.md
+│   ├── CPU_CORE.md
+│   ├── INTERRUPTS_&_NVIC.md
+│   ├── SYSTEM_ARCHITECTURE_&_MEMORY_MAP.md
+│   ├── debugging-peripherals.md
+│   ├── nvram-manager.md
+│   └── Can_Bus–Bare-metal_Learning_Notes.md
 │
-├── tools/                 # Helper scripts, diagrams, utilities
-│
+├── tools/                 # Diagrams, helper scripts, utilities
 └── README.md
-
 ```
+
+---
+
+## ⚙️ Drivers (Register-Level Design)
+
+All drivers are:
+
+* Implemented using **direct register access**
+* Designed for **clarity and reuse**
+* Structured for **scalable firmware systems**
+
+### Example APIs
+
+```c
+gpio_configure_pin();
+gpio_write_high();
+gpio_write_low();
+```
+
 ---
 
 ## 📂 Examples
 
-This repository contains **minimal, focused examples** that demonstrate  
-bare-metal firmware concepts using **clean, reusable drivers**.
+### 🔹 GPIO Blink
 
-The goal of these examples is to show **how application code should interact
-with low-level drivers**, without exposing register-level details at the
-application layer.
-
-### 🔹 GPIO Blink Example
-
-**Location:**  
+**Location:**
 `examples/gpio_blink/main.c`
 
 **Demonstrates:**
-- GPIO pin configuration using a driver abstraction
-- Output control via driver APIs instead of direct register access
-- Clear separation between **application layer** and **driver layer**
-- Simple blocking delay for timing validation
 
-**APIs used:**
-- `gpio_configure_pin()`
-- `gpio_write_high()`
-- `gpio_write_low()`
+* Driver-based GPIO configuration
+* Clean application-to-driver interaction
+* Hardware validation using simple delay
 
-> This example serves as a reference for writing **clean, maintainable
-bare-metal applications** using reusable peripheral drivers.
+---
 
+### 🔹 USART Echo
 
+**Location:**
+`examples/sercom7_usart_echo/main.c`
+
+**Demonstrates:**
+
+* Serial communication
+* Peripheral initialization
+* Data flow validation
+
+---
+
+## 🧠 Engineering Philosophy
+
+This repository follows **real firmware engineering principles**:
+
+* Clear separation of layers:
+
+  * Application
+  * Drivers
+  * Hardware
+* Minimal abstraction — maximum clarity
+* Debug-first mindset
+* Readability over cleverness
+
+---
+
+## ⚠️ Problems This Repository Helps You Solve
+
+* Code not reaching `main()`
+* Clock misconfiguration issues
+* Interrupts not triggering
+* Peripheral failures
+* Memory corruption bugs
+
+---
+
+## 🔬 Real-World Relevance
+
+These concepts directly apply to:
+
+* Automotive ECUs
+* Industrial control systems
+* IoT devices
+* Telematics platforms
+
+---
+
+## 🛠️ Future Enhancements
+
+* Startup code (`startup.s`) breakdown
+* Linker script deep dive
+* DMA and advanced peripherals
+* RTOS vs Bare-metal comparison
+* Real debugging case studies
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome if they:
+
+* Improve clarity
+* Add real debugging insights
+* Follow clean firmware practices
+
+---
+
+## ⭐ Support
+
+If this repository helped you, consider giving it a ⭐
+
+---
+
+## 📌 Final Thought
+
+> Bare-metal programming is not about writing code.
+> It’s about **understanding how the machine truly works**.
