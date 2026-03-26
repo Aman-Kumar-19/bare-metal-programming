@@ -59,10 +59,9 @@ Immediately after reset:
 * Clock = default internal oscillator
 * Execution starts from:
 
+```md
+`0x00000000`
 ```
-0x00000000
-```
-
 ---
 
 ## 📌 Step 2: Vector Table Read
