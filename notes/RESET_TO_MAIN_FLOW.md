@@ -19,29 +19,25 @@ Understanding this flow helps you:
 
 ## ⚡ Complete Execution Flow
 
-```
-RESET
-  ↓
-CPU reads Vector Table
-  ↓
-Stack Pointer (SP) initialized
-  ↓
-Program Counter → Reset_Handler
-  ↓
-Startup Code Execution
-  ↓
-SystemInit()
-  ↓
-.data copy (FLASH → RAM)
-  ↓
-.bss zero initialization
-  ↓
-C runtime setup
-  ↓
-main()
-```
+```mermaid
+flowchart TD
+    A[RESET] --> B[CPU reads Vector Table]
+    B --> C[Load Stack Pointer SP]
+    C --> D[Load Program Counter PC]
+    D --> E[Jump to Reset_Handler]
 
----
+    E --> F[Startup Code Begins]
+
+    F --> G[SystemInit]
+    G --> H[data init FLASH to RAM]
+    H --> I[bss zero init]
+    I --> J[C runtime init]
+
+    J --> K[main]
+
+    K --> L[Application Loop]
+
+```
 
 ## 🧱 Step 1: Reset Occurs
 
@@ -70,7 +66,19 @@ Immediately after reset:
 ---
 
 ## 📌 Step 2: Vector Table Read
+```mermaid
+---
+config:
+  theme: neo-dark
+---
+flowchart TD
+    V0[0x00000000\nInitial Stack Pointer] --> CPU
+    V1[0x00000004\nReset_Handler] --> CPU
+    V2[0x00000008\nNMI_Handler]
+    V3[0x0000000C\nHardFault_Handler]
 
+    CPU -->|Loads SP & PC| RH[Reset_Handler Execution]
+```
 ### 📍 Located at:
 
 ```
@@ -103,6 +111,15 @@ PC = *(0x00000004);
 ---
 
 ## 🚀 Step 3: Enter Reset_Handler
+```mermaid
+flowchart TD
+    A[Reset Handler Entry] --> B[System Init]
+    B --> C[Copy Data Section]
+    C --> D[Zero BSS Section]
+    D --> E[Runtime Init]
+    E --> F[Call Main]
+    F --> G[Infinite Loop]
+```
 
 This is the **true firmware entry point**.
 
@@ -151,6 +168,14 @@ Bring hardware out of **safe reset state**.
 ---
 
 ## 📦 Step 5: `.data` Section Initialization
+```mermaid
+flowchart LR
+    FLASH[(FLASH Memory)]
+    RAM[(RAM Memory)]
+
+    FLASH -->|.data section copy| RAM
+    RAM -->|Zero initialize| RAM_BSS[.bss = 0]
+```
 
 ### 🔹 What is `.data`?
 
@@ -267,21 +292,21 @@ main();
 
 ## 🧱 Memory Layout (Runtime View)
 
-```
-FLASH
-│
-├── Vector Table
-├── .text
-└── .rodata
+```mermaid
+flowchart TD
+    subgraph FLASH
+        F1[Vector Table]
+        F2[Text Section Code]
+        F3[Read Only Data]
+    end
 
-RAM
-│
-├── Stack (grows ↓)
-├── Heap  (grows ↑)
-├── .bss
-└── .data
+    subgraph RAM
+        R1[Stack]
+        R2[Heap]
+        R3[BSS Section Zero Init]
+        R4[Data Section Init]
+    end
 ```
-
 ---
 
 ## ⚠️ Real Debugging Scenarios
@@ -319,7 +344,26 @@ Possible causes:
 ---
 
 ## 🔍 Debugging Strategy (Industry Practice)
+```mermaid
+flowchart TD
+    A[Start Debugging] --> B[Breakpoint at Reset Handler]
+    B --> C[Step into System Init]
+    C --> D[Verify Clock Setup]
 
+    D --> E[Check Data Section]
+    E --> F[Check BSS Section]
+
+    F --> G{Reached Main}
+
+    G -->|Yes| H[Normal Execution]
+    G -->|No| I[Investigate Issue]
+
+    I --> J[Check Stack Pointer]
+    J --> K[Check Vector Table]
+    K --> L[Check Linker Script]
+
+
+```
 ### ✅ Step-by-step
 
 1. Set breakpoint at `Reset_Handler`
